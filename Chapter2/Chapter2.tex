@@ -1,0 +1,94 @@
+%If you are presenting work which has been previously published, acknowledge this here.
+% ***************************************************
+% How to introduce a previously published chapter
+% ***************************************************
+%This is an example of how you might introduce a chapter that has been published previously. 
+\cleartoevenpage
+\pagestyle{empty}	
+%Use this command (above) to suppress the header from the preceding chapter.
+
+% \noindent
+% The following publication has been incorporated as Chapter~\ref{Chap:label}.
+
+% \noindent
+% 1.~\cite{DumyCitationKey} \textbf{Your Name}, Co-author 1, and Final Author, \href{linktoyourpaper}{Title of your paper}, \textit{Journal} Issue, Number, Year
+
+% \begin{table}[h]
+% 	\begin{center}
+% 	\begin{tabular}{|c|l|l|}
+% 		\hline
+% 		Contributor & Statement of contribution & \% \\
+% 		\hline
+% 		\textbf{Your Name}				& writing of text 					& 70\\
+% 															& proof-reading							& 60 \\
+% 															& theoretical derivations 	& 70\\
+% 															& numerical calculations 		& 100\\
+% 															& preparation of figures 		& 80 \\
+% 															& initial concept						& 10 \\
+% 		\hline
+% 		Co-author 1								& writing of text 					& 20\\
+% 															& proof-reading							& 10 \\
+% 															& supervision, guidance 		& 20\\
+% 															& theoretical derivations 	& 10\\
+% 															& preparation of figures 		& 20 \\
+% 															& initial concept						& 10 \\
+% 		\hline
+% 		Final Author							& writing of text 					& 10\\
+% 															& proof-reading							& 30 \\
+% 															& supervision, guidance 		& 80 \\
+% 															& theoretical derivations 	& 20 \\
+% 															& preparation of figures 		& 10 \\
+% 															& initial concept						& 80 \\
+% 		\hline
+% 	\end{tabular}
+% 	\end{center}
+% \end{table}
+
+% If your task breakdown requires further clarification, do so here. Do not exceed a single page.
+
+
+% ***************************************************
+% Example of an internal chapter
+% ***************************************************
+%This is an internal chapter of the thesis.
+%If you have a long title, you can supply an abbreviated version to print in the Table of Contents using the optional argument to the \chapter command.
+\chapter[Spatial Transcriptomic and single cell RNA sequencing for cell-cell communication]{Spatial Transcriptomic and single cell RNA sequencing for cell-cell communication}
+\label{Chap:2}	%CREATE YOUR OWN LABEL.
+\pagestyle{headings}
+\section{Introduction}
+\label{Sec:2.1_intro}	%CREATE YOUR OWN LABEL.
+
+% ********* Enter your text below this line: ********
+Most ligand-receptor (L-R) interaction research so far has been relying on the use of fluorescently-conjugated antibody-based methods, that are only able to assess protein levels of a few target molecules and results are often based on a small number of cells at a time. Whole-transcriptome analysis, especially methods using single-cell RNA-seq (scRNA-seq) with gene expression profiles at single cell level, provide a means towards high-throughput L-R screening assays \cite{browaeys2020nichenet, efremova2020cellphonedb}. However, these transcriptomics-based methods do not assess cellular communication in a tissue context, where interactions happen only between neighbour cells but not between distant cells. Often, these methods result in a large number of false positive predictions. Spatial transcriptomics (ST-seq) and RNA in situ hybridization (ISH) technologies overcome these limits and enable the study of (target) gene expression in undissociated tissue sections, maintaining tissue integrity \cite{salmen2018barcoded}. ST-seq measures barcoded gene expression in spots printed onto a functional glass slide \cite{salmen2018barcoded}, which captures mRNA released from a tissue section, preserving the cell morphology. In this work, we aim to establish a pipeline to study L-R interaction of cancer and immune cells across the whole tissue section, utilizing neighbourhood information between cells. We assessed the utility of combining four complementary technologies to study and validate L-R interaction between immune and cancer cells in skin cancer tissue. These techniques include two different technologies to capture transcription expression level scRNA-seq, ST-seq, RNA-ISH.  [...]
+
+ ST-seq has been applied to study the gene expression landscape of tissues and diseases, such as prostate cancer    \cite{berglund2018spatial, ji2020multimodal}, pancreatic cancer \cite{moncada2019integrating}, melanoma \cite{thrane2018spatially}. However, ST-seq still has not achieved single-cell resolution per spatial spots (1-50 cells/spot), and the number of cells as well as the transcriptome quality that can be captured in each spot depend on the tissue context. These shortcomings of ST-seq can be overcome by a targeted RNA-ISH approach to visualize the cell interaction through detecting L-R at a single cell level. The RNAscope HiPlex assay (ACD Bio) has been developed based on the RNA-ISH technique and improved on the signal amplification and background suppression process compared to the previous version, allowing for visualization and detection of mRNA at near single molecule sensitivity. The technology allows researchers to simultaneously detect up to 12 single target genes on the same tissue section through fluorophore cleavage steps. Extending from measuring RNA, we implemented another technique to detect protein, covering the whole tissue and at subcellular resolution. Opal multiplex IHC can measure 4-7 proteins on the same tissue. [...]
+% ***************************************************
+\section{Detecting CCC from transcriptome-wide to targeted interaction}
+\label{Sec:2.2_CCC_ST}	%CREATE YOUR OWN LABEL.
+
+% ********* Enter your text below this line: ********
+Add your text here. 
+
+% ***************************************************
+\section{STRISH framework for detect cell co-localisation using FISH imaging}
+\label{Sec:2.2_STRISH}	%CREATE YOUR OWN LABEL.
+
+% ********* Enter your text below this line: ********
+To overcome the limitations in detection sensitivity due to a lack of signal in the cancer region from the sequencing methods (scRNA-seq and ST-seq) and to achieve single cell resolution, we implemented RNAscope HiPlex assay. RNAscope HiPlex can detect upto 12 gene targets simultaneously at single-molecule sensitivity. In this study, we used whole tissue fluorescent microscopy images captured at 40x magnification to determine RNA interaction at cellular resolution. Three different fluorophores (Cy3, Cy5 and Cy7) were used in two iterative wash-stain rounds to label the five distinct target genes, including THY1, IL34, and CSF1R, CD207 and ITGAM (Figure 1C). The zoom-in images from a cancer nest area (marked as a white dashed line, and two red/green circles - IL34 and CSF1R in a red box and THY1 and ITGAM in a green box) show distinct coexpression of neighbouring cells at single-cell resolution, suggesting cell to cell interaction for each of pair compared to no signal in the 'Negative' control. 
+
+To automate and improve the accuracy of detecting L-R interaction across the whole tissue section based on fluorescent data, like RNAscope, we developed a computational pipeline STRISH. STRISH pipeline consists of two phases, starting with a cell local co-expression detection step to define spatial neighbourhood, followed by scoring, statistical testing and visualizing significant local co-expression (Figure 2A; Method Algorithms 1,2). Local co-expression is defined as the expression within a tissue area containing fewer than a threshold number of cells (depending on tissue types), for example fewer than 100 cells. The pipeline runs a series of positive-cell detection iterations to find regions that contain lower than the predefined threshold of neighboring cells and subsequently determines the number of L-R co-expression within these regions (refer to the Method section about STRISH algorithm). The L-R co-expression scores are then used for statistical test of significant coexpression over the null distribution of random, non-interacting gene-gene pairs. Across the tissue samples, we observed considerable interaction of IL34-CSF1R around the areas where the cancer nests are in both BCC and SCC, particularly in the epidermal compartments (Figure 1E, 2B). Interestingly, compared to RNAscope data we observed a similar pattern in ST-seq data, with many spots that were predicted to have cell-cell communication through IL34-CSF1R located in cancer and epidermis regions.  
+
+% ***************************************************
+\section{Quantitative and qualitative validation}
+\label{Sec:2.3_validation}	%CREATE YOUR OWN LABEL.
+\subsection{Statistical test with permutation test}
+To validate test for the significant of the cell-cell interactions based on colocalization scored among all the positive windows, STRISH performs the a statistical test to compare the level of co-localisation of the pair of L-R of interest with the random combination of two pair of markers available for the same window and across all the positive windows. Briefly In summary, STRISH finds tissue locations (windows) that have coexpression of L-R pairs higher than random expression in other windows and by other non L-R pairs.  There are two randomization procedures, testing for the expression level relative to random non L-R pair at one location (one window), and testing for significant expression of one of co-localisation of L-R pair relative to all locations a window (equation (3)). Firstly, the means of cells co-localisation for both ligand or receptor within every window $w_i \neq 0$ is compared to the random combination of two a positive to ligand and a target non-receptor marker from the same window. The comparison between real pair of L-R cell co-localisation with the matched randomized pairs allows us to show test for if there are significantly more the abundant presence of the cells expressing  the ligand and receptor within a window than cells co-expressing random non L-R pairs. Secondly, for all the windows that have the positive mean of co-localisation score of the same L-R, we tested if certain windows had  are tested against each other to identify for the significant more cells co-expressing the pair than the remaining  most significant windows across the tissue. This test reduces false positive detection, because while the scanning windows approach could capture the region of colocalization of cells expressing the ligand and receptor, the colocalization can be random expression of the pairs that happened to be in the same window, but was at a low level of cells can also be at random. The second randomness test aims to identify the windows which have the highest frequency of colocalization of the target L-R compared with all other windows throughout the tissue. The combination of two statistical test generates will provide a P value for each window which correspond to either significant or insignificant colocalization
+% ********* Enter your text below this line: ********
+\begin{equation}
+    P_{wi} = \frac{\sum_{i=1}^{m}(coexpresSc_{wi} > coexpresSc_{random_pairs_wi})+ \sum_{j=1}^{n-1}(coexpresSc_{wi} > coexpresSc_{posLR_j}) }{total\_random_{random\_pairs} + total\_window_{pos\_lr}}
+\end{equation}
+
+% ***************************************************
+\typeout{}
+
+\bibliography{Chapter2}

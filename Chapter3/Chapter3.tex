@@ -1,0 +1,64 @@
+\chapter[Spatial proteomic for mapping spatial cell types and identifying interactions across tissue]{Spatial proteomic for mapping spatial cell types and identifying interactions across tissue}
+\label{Chap:3}	%CREATE YOUR OWN LABEL.
+\pagestyle{headings}
+\section{Introduction}
+\label{Sec:3.1_intro}
+%CREATE YOUR OWN LABEL.
+While the number of gene markers can be profiled using cutting edge spatial transcriptomic is growing rapidly, i.e. Visium (10X Genomic),  Stereo-Seq (BGI), it is important to note that not all RNA expression are highly correlated with translated protein expression level. Therefore, spatial proteomic is an important complementary tools to uncover the complex heterogeneity of cancerous cell and their intercellullar connection with other cells. Advances in multiplexed tissue imaging enables analysis of up to hundreds of proteins in thousands of cells in a single experiments. Protein profile of a tissue has been analysed, it cam provide an additional layer of connection from cells to environment context and biological processes. 
+
+For this chapter, I focused more on quantifying the cellular structures and the cross-talk between cell types in cancer tissues using two spatial proteomics technologies: Vectra Polaris in skin cancer and Imaging Mass Cytometry (IMC) \cite{giesen2014IMC} in colorectal cancer (Table: \ref{table:DataInfor}). The former dataset I was working on  consists of 6 whole slide skin cancer tissues which were scanned by highly multiplex Polaris technologies. Each slide was processed with a panel of 6 proteins CD8, PD-L1, PD-1, FoxP3, CD68, Pan-cytokeratin (PanCK) and DAPI for nuclei staining. Meanwhile for the colorectal cancer, the experiment was designed to use IMC technology to capture the protein expression of a panel of 15 protein markers from 51 patients with stage 3 colon adenocarcinoma. The IMC protein panel consists of structural markers  Epithelial (E-cadherin, Keratin), Fibroblast (collagen), cell proliferative marker (Ki-67) and several immune markers including for T-cells (CD8), regulatory T cells (FoxP3), macrophages (CD68+), B cells (CD20+), etc. Unlike Polaris technology, IMC performs tissue scanning at multiple regions of interest (ROIs) selected from whole slide tissue. Although, the two input datasets captured different antibody panels as well as different cancer types, they both produce protein expression data at subcellular resolution retaining  a wealth of spatial information.    
+
+\begin{table}[ht]
+\centering
+\caption{Summary of data specification}
+\begin{tabular}{||P{7cm} || P{3cm} || P{3cm} ||} 
+ \hline
+ Specifications & Colorectal Cancer Samples & Skin Cancer Samples   \\ [0.33ex] 
+ \hline\hline
+ Number of patients & 52 & 3   \\ 
+ \hline
+ Number of Markers & 16 markers & 6 markers  \\ 
+ \hline
+ Number of images & 126 ROIs &  6 whole slides \\
+ \hline
+ Diagnosis & Stage 3 adenocarcinoma & Basal Cell Carcinoma  \\ [1ex] 
+ \hline
+\end{tabular}
+\label{table:DataInfor}
+\end{table}
+
+
+% ***************************************************
+\section{Cell type identification and cell communities detection methods}
+\label{Sec:3.2_CCC_ST}	%CREATE YOUR OWN LABEL.
+\subsection{Adapting cell type identification from existing scRNA-seq methods}
+Before any CCC analysis, a key step  to make use of sub-cellular spatial proteomic information is to perform cell segmentation and cell type identification. Depending on the size of the whole slide tissue, Polaris imaging in our skin cancer dataset captured around $40000\sim 79000$ cells per tissue with fluorescence values quantified for each marker. To employ the current established cell clustering and annotation, the Polaris imaging was transformed into a non-imaging-based data through cell segmentation (Figure: \ref{fig:Polaris_skin_cancer_cell_iden}A,B) \cite{hickey2021strategies}. More specifically, cell segmentation was carried out throughout the tissue using a deep learning model called stardist \cite{schmidt2018cell}, which eventually turned every nuclei in the DAPI channel into a list of cell objects. For each cell object, the protein signal intensity was normalised to the mean DAPI intensity within cell boundary and assigned to expression level of that protein to the cell (Figure: \ref{fig:Polaris_skin_cancer_cell_iden}B-D). In order to remove the artificially high background from fluorescent intensities (outliers), $95^{th}$ percentile was used to cap the maximum value of each marker (Figure: \ref{fig:Polaris_skin_cancer_cell_iden}D). After the preprocessing of proteomics data, a standard cell type clustering was applied using a common single-cell processing pipeline, scanpy \cite{wolf2018scanpy}. Based on the panel of 6 proteins, we were able to identify several major epithelial (PanCK+), inmate immune cells (CD68+) and adaptive immune cells (CD8+, FoxP3+) (Fig: \ref{fig:skin_cancer_polaris}A). Among all the clusters detected by the scanpy pipeline (leiden clustering), those cells with very low expression of all the proteins in the panel were classified as unidentified and removed from downstream analysis. The cell identifications were eventually plotted back to the original spatial context for validation.  
+
+Similarly, for our IMC imaging dataset of colorectal cancer, the first analysis steps are cell segmentation and cell clustering. The key differences between Polaris and IMC are the resolution of the images generated by each technology. While every pixel in the Polaris image captures $0.49 \mu m$ in the real tissue, the specification in IMC is $1$pixel representing $1\mu m$. IMC generated discrete signal (counts of heavy metal molecules) which requires a specialised cell segmentation method. Currently, the IMC segmentation pipeline is being adapted from a pipeline by Bodenmiller Group, one of the founders of the technology (\href{https://github.com/BodenmillerGroup/ImcSegmentationPipeline/blob/development/scripts/imc_preprocessing.ipynb}{Github IMC preprocessing pipeline}. In short, the raw IMC data (.mcd file) are converted into a standard image format with multiple channels and each channel represent the expression of a staining marker. Because the signal intensity in IMC has lower resolution yet noisier than in Polaris, we manually built a segmentation model to assign pixels to either cell nuclei, cytoplasm or background using two steps with CellProfiler and Ilastik \cite{carpenter2006cellprofiler, berg2019ilastik}. Since IMC imaging data were generated only for selected ROI, not the whole tissue, the number of cells in this project is significantly lower than that in the skin cancer project, ranging from $200$ to $1600$ cells per ROI (~3 ROIs/sample) . After the cell segmentation, similar data preprocessing is applied to map signals to a list of cell objects. Cellular data was then clipped to remove outliers. For cell type annotation, major structural cell types could be identified with high confidence such as Epithelial or Cancer (E-cadherin and Keratin), Fibroblast and Stromal (Collagen, SM-actin). We were also able to annotate other adaptive like B-cells (CD20), CD8 T-cells (CD8), T-reg cells (CD4, FoxP3) and inmate immune cell type Macrophages (CD68) (Fig:\ref{fig:colorectal_cancer_IMC}A). Finally, for validation, we compared the IMC-identified cell types against pathologist annotation. Through a process called image registration, we were able to align the IMC image to the adjacent section of H\&E image which was annotated with some cell types by pathologist (Fig:\ref{fig:colorectal_cancer_IMC}B). Since our computational results matched well with manual annotation this gave us confidence in our cell segmentation and clustering approaches before proceeding towards the CCC analyses. 
+
+
+\subsection{Detecting cell communities based on cells spatial organisation}
+In the second year of my Ph.D. study, I implemented and adopted several methods to uncover the tissue spatial organization by considering each cell as a point process in a 2-dimensional coordinate system. The advantage of this point-process approach is that it can use most of the analytical procedure established in high-level spatial analyses in social studies \cite{yushimito2012voronoi}. It is reasoned that the spatial structure of the tissue is a heterogeneous collection of single cells, consisting of multiple homogeneous groups \cite{schurch2020coordinated}. In this approach, we identify spatial communities throughout the tissue using $K$ nearest neighbour and/or a radial distance approach (Fig: \ref{fig:CCC_conceptualised}A). For each cell across the tissue, the spatial identity of itself is defined by a K number of nearest neighbouring cells (including itself as the reference). The nearest neighbour metric is measured by Euclidean distance between the $X$ and $Y$ coordinates of the cells in the two dimensional tissue section. Alternatively, we can also apply a neighbourhood identification method that is threshold free, known as the Delaunay cell network \cite{guibas1985primitives, dries2021giotto}. The spatial identities of cells are then clustered by their neighbourhood features \ref{fig:CCC_conceptualised}. The clusters of cells based on cell neighbourhood (i.e. spatial identity) can reveal communities of cells within the tissue and the composition of cell type for each community. Such methods have been used and adopted in different fields including eco-geography as well as biology \cite{goltsev2018CODEX, dries2021giotto}.
+
+To ascertain whether cell communities identified by the above approaches followed true spatial patterns, we performed co-occurrence analysis which also employs similar principles as in the nearest neighbourhood approach. This co-occurrence analysis was inspired by an approach introduced by Tosti et al., first applied for spatial transcriptomics data of human pancreas \cite{tosti2021single}. The co-occurrence score can be estimated by the Equation \ref{Eq:Cooc_equation}, which is defined by the fraction of the probability of observing a test cell type $exp$ at the presence of a reference cell type $cond$ ($P_{r}(exp|cond)$) over the probability of observing that test cell type $exp$ $P_{r}(exp)$ at the presence of any other cell type within the same distant interval $r$. At a specific distant $r$, $Co_{r}$ indicates how high/low $exp$ and $cond$ cell types co-localised compared to random cell types. The comparison of $Co_{r}$ at an increasing distant radii $r$ shows how the co-localisation of two cell types starts dispersing.[...]
+
+
+% ********* Enter your text below this line: ********
+
+% ***************************************************
+\section{STRISH for cell co-localisation with spatial proteomic data}
+\label{Sec:3.3_STRISH2.0}	%CREATE YOUR OWN LABEL.
+
+% ********* Enter your text below this line: ********
+
+
+% ***************************************************
+\section{Quantitative and qualitative measurement}
+\label{Sec:3.4_validation}	%CREATE YOUR OWN LABEL.
+
+% ********* Enter your text below this line: ********
+
+
+% ***************************************************
+
+\bibliography{.Chapter3}
