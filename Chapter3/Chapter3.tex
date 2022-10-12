@@ -1,4 +1,4 @@
-\chapter[Spatial proteomic for mapping spatial cell types and identifying interactions across tissue]{Spatial proteomic for mapping spatial cell types and identifying interactions across tissue}
+\chapter[Spatial proteomic for mapping cell types and identifying interactions across tissues]{Spatial proteomic for mapping cell types and identifying interactions across tissues}
 \label{Chap:3}	%CREATE YOUR OWN LABEL.
 \pagestyle{headings}
 \section{Introduction}
@@ -43,7 +43,7 @@ Similarly, for our IMC imaging dataset of colorectal cancer, the first analysis 
     \label{fig:Polaris_skin_cancer_cell_iden}
 \end{figure}
 
-\subsection{Detecting cell communities based on cells spatial organisation}
+\subsection{Detecting cell communities with cells spatial distribution}
 There are already a few computational methods that used scRNA-seq to infer the CCC i.e. CellChat \cite{jin2021CellChat}, CellPhoneDB \cite{efremova2020cellphonedb} or NicheNet \cite{browaeys2020nichenet}. However, they are all unable to address the spatial constraints of interactions. With scRNA-seq data, the limited insights into the spatial location of the RNA molecules within a cell and the organization of cells in a tissue prevent the CCC inference from reaching its potential. To address this, the development of higher multiplexed histological techniques for capturing transcriptomic or/and proteomic information at subcellular resolution, e.g. co-detection by imaging (CODEX) \cite{goltsev2018CODEX} or IMC from Hyperion, facilitated the integration of spatial information into CCC inference. 
 
 Given the growing number of spatially resolved transcriptomic and proteomic technologies, the current available analysis strategies to process these high dimensional data have not yet exploited the full potential of spatial information. In short, spatially resolved CCC analysis can be categorised into two main groups. The first approach considers each cell as a point in Cartesian coordinate system and assesses the changes in the spatial co-localisation between pairs of cell types at distances \cite{arnol2019modeling,schurch2020coordinated}. Meanwhile, the second path considers only the interactions of each cell and its intermediate adjacent cells within a short proximity from the cell membrane. It is sufficient to measure cell-cell interaction through gap junction or paracrine signalling. The pairwise interaction of two cell types is then grouped by cell phenotypes and compared to randomised label of cells to determine significance of interactions  \cite{schapiro2017histocat}.  In the following sections, I will go deeper into the advantages and disadvantages of each approach and about how I applied them throughout my second-year projects.    
@@ -57,7 +57,7 @@ PD1 has been extensively studied and identified as immune inhibitor for skin can
     \label{fig:CCC_conceptualised}
 \end{figure}
 
-\subsection{Nearest neighbourhood approach to cells interaction}
+\subsection{Nearest neighbourhood approaches to cell-cell interaction}
 % ********* Enter your text below this line: ********
 For the second aims of this thesis, I implemented and adopted several methods to uncover the tissue spatial organization by considering each cell as a point process in a 2-dimensional coordinate system. The advantage of this point-process approach is that it can use most of the analytical procedure established in high-level spatial analyses in social studies \cite{yushimito2012voronoi}. It is reasoned that the spatial structure of the tissue is a heterogeneous collection of single cells, consisting of multiple homogeneous groups \cite{schurch2020coordinated}. In this approach, we identify spatial communities throughout the tissue using $K$ nearest neighbour and/or a radial distance approach (Fig: \ref{fig:CCC_conceptualised}A). For each cell across the tissue, the spatial identity of itself is defined by a K number of nearest neighbouring cells (including itself as the reference). The nearest neighbour metric is measured by Euclidean distance between the $X$ and $Y$ coordinates of the cells in the two dimensional tissue section. Alternatively, we can also apply a neighbourhood identification method that is threshold free, known as the Delaunay cell network \cite{guibas1985primitives, dries2021giotto}. The spatial identities of cells are then clustered by their neighbourhood features \ref{fig:CCC_conceptualised}. The clusters of cells based on cell neighbourhood (i.e. spatial identity) can reveal communities of cells within the tissue and the composition of cell type for each community. Such methods have been used and adopted in different fields including eco-geography as well as biology \cite{goltsev2018CODEX, dries2021giotto}.
 
@@ -106,17 +106,13 @@ For CCC analysis, STRISH introduces a new method for cell co-localisation detect
 
 It is important to acknowledge that STRISH particularly focuses on CCC analyses in spatial transcriptomic and proteomic data. Hence, it should not be used in isolation but in combination with other data normalisation and cell type clustering tools. Existing tools such as Giotto and Squidpy also provide multiple functions for spatial analysis and interactive graphical user interface. While such features are useful for exploratory analysis, STRISH features are tailored to cell-cell interaction through ligand-receptor and multimodal data analysis. To improve STRISH, I also seek to introduce more statistical tests and spatial quantitative measurement into the current pipeline.
 
-\section{Quantitative and qualitative measurement}
+\section{Quantitative and qualitative measurements}
 \label{Sec:3.4_validation}	%CREATE YOUR OWN LABEL.
-\subsection{Spatially differential analysis across images}
 
-\subsection{Correlation of spatial organisation to clinical survival rate}
-
-\label{Sec:4.2_CCC_in_COAD}	%CREATE YOUR OWN LABEL.
-\subsection{Cell type community and heterogeneity in cancer tissues}
+\subsection{Quantification of cell communities conserved across patient groups}
 % ********* Enter your text below this line: ********
 We introduce 
-
+\subsection{Comparison of tissue heterogeneity across patients and cancer subtypes}
 % ********* Enter your text below this line: ********
 By aggregating cell's neihgborhood from multiple ROIs, STRISH allows the spatial differential analysis across the  conditions and uncover the relationship between treatment outcome and spatial organisation of cell types.
 

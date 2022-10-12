@@ -47,6 +47,15 @@
 %You can add more packages here if you need
 \usepackage[semicolon,round,sort&compress,sectionbib,numbers]{natbib}  %
 \usepackage{chapterbib} 
+
+%---------------------------------
+% personalise package
+\usepackage{ccaption}% http://ctan.org/pkg/ccaption
+\usepackage[ruled,vlined]{algorithm2e} % to write algorithm and pseudocode 
+% \usepackage{bbding} % to write checkmark for the table
+
+%---------------------------------
+
 %This defines some macros that implement Latin abbreviations
 %COMMENT OUT OR DELETE IF UNDESIRED.
 \newcommand{\via}{\textit{via}} %Italicised via.
@@ -67,4 +76,5 @@
 \newcommand{\apriori}{\textit{a priori}} %Before hand.
 \newcommand{\etal}{\textit{et al.}} %And others, with correct punctuation.
 \newcommand{\naive}{na\"\i{}ve} %Queen Amidala is young and \naive{}.
-
+% self defined command
+\SetKw{KwBy}{by}
