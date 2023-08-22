@@ -1,85 +1,192 @@
-\chapter[Data integration tool for multimodal spatial-omics data and multiple samples analysis]{Data integration tool for multimodal spatial-omics data and multiple samples analysis}
+\chapter[Developed analysis methods for multiple samples and multimodal spatial-omics data]{Developed analysis methods for multiple samples and multimodal spatial-omics data}
+
 \label{Chap:4}	%CREATE YOUR OWN LABEL.
 \pagestyle{headings}
 \label{Sec:4.1_intro}	%CREATE YOUR OWN LABEL.
 \section{Introduction}
-The variability of cell organisations across tumour microenvironments (TMEs) and patients is the central issue that hinders successful anti-cancer treatment. Spatially, TMEs are often diversely organised and constantly change in response to external stimulations (i.e. chemotherapy, radiotherapy) which ultimately assist these cells’ survival and metastasis to neighbouring organisms \cite{wu2022spatial}. Studies have shown that TMEs are shaped and coordinated by the crosstalk between cancer cells to facilitate the development of cancer \cite{jin2020updated, quail2013microenvironmental, schurch2020coordinated}. TMEs and cancer-immune cell communication are regarded as two complex mechanisms in cancer that are arising as a potential target for cancer therapy, especially targeted therapy and immunotherapy \cite{jin2020updated, abou2020integrating, qiu2017reprogramming}. Experimental and computational approaches are highly desirable to properly understand the heterogeneity and mutability of the TMEs across multiple samples and cancer subtypes. 
+The distribution of the cells in a spatial context can determine the crosstalk between different cell types \cite{van2018spatially}. As discussed in chapters \ref{Chap:2} and \ref{Chap:3}, the advances in multiplexing spatial transcriptomic and proteomic (spatial-omics) experimental technologies have enabled us to uncover the complex spatial structure of the tumour microenvironments (TMEs) at an unprecedented resolution and capacity. Using spatial-omics atlas as an approach to recapitulate the intratumoral heterogeneity and the variety of responses across cancer subtypes and/or patients is anticipated to emerge as a routine approach to study cancer tissue \cite{wu2022spatial,napoli2022functional,marsh2022approaches}. A growing number of studies have used spatial-omics technologies to spatially resolve the tumour immune colocalisation within the TMEs such as  breast cancer \cite{jackson2020single, ali2020imaging}, lung cancer \cite{sorin2023single}, colorectal cancer \cite{schurch2020coordinated, pelka2021spatially} and melanoma \cite{nirmal2022spatial}. By combining multiple experimental techniques such as spatial transcriptomic, proteomic and molecular measurements, researchers are aiming to gain a comprehensive view of the cancer status of a biopsy tissue \cite{boehm2022harnessing}. However, barriers around combining different modalities prevent the application of spatial-omics at large quantities \cite{wu2022spatial, vickovic2022sm}. Therefore, methods for computational integration of spatial-omics are needed and can provide the key to uncovering the complexity of cell-cell interactions and TMEs from multidimensional data.  
+ 
+Single-cell spatially resolved technologies have allowed us to study the complexity of the TME with unprecedented resolution. Across the TMEs, a number of inter- and intra-tumour heterogeneity is driven by aberrant inter-cellular interactions. Several analysis frameworks for analysing spatial data have been developed (discussed in Chapters \ref{Chap:Intro}). However, there are a limited number of computational frameworks able to perform multiple samples comparison and multimodal spatial-omics data integration. Although existing software packages offer versatile functions to analyse different spatial-omics data, the implementation is usually applied to individual regions of interest (ROI) and/or the single spatial-omic platform (\ie squidpy\cite{palla2022squidpy}, Giotto\cite{dries2021giotto}, stlearn\cite{pham2020stlearn}, histocat\cite{schapiro2017histocat}). To this aim, we developed an interactive analysis package called Multi-Omics Spatial Analysis Platform (MOSAP), focusing on data combinations from multiple spatial-omics data types and samples and identifying the network heterogeneity across ROIs and/or images. 
 
-The distribution of the cells in spatial context can be the result of the crosstalk between cancer and immune cells \cite{van2018spatially}. As discussed in Chapters \ref{Chap:2} and \ref{Chap:3}, the advances in multiplexing spatial transcriptomic and proteomic (spatial-omic) experimental technologies have enabled us to uncover the spatial structure of the TMEs at an unprecedented resolution and throughput capacity. It is anticipated that the ultimate spatial tumour atlas for uncovering the variation across cancer subtypes and/or patients \cite{wu2022spatial} will emerge as a contemporary research approach. The combination of multimodal analysis including spatial transcriptomic, proteomic and molecular measurements can result in a holistic description of the state of cancer for each patient \cite{boehm2022harnessing}. It is often seen that spatial-omics data are collected in large quantities and generated in multiple batches. There are several analysis frameworks for spatial data quantification have been developed (discussed in Chapters \ref{Chap:Intro}). However, there is a limited number of computational frameworks have been reported to be able to perform multimodal spatial-omic data integration. 
-% \begin{enumerate}
-%     \item Perform registration to seamlessly align multiple adjacent images
-%     \item Integrate data 
-%     \item Facilitate high-res image display and interactive data exploration through Napari
-%     \item Perform tissue heterogeneity analysis across multiple ROIs/FOVs
-%     \item Export/Import single-cell analysis result to visualisation
-% \end{enumerate}
+MOSAP has been developed to effectively address the challenges associated with analyzing multiple samples. One of the key features integrated into MOSAP is the scoring of spatial network heterogeneity in cell-cell neighbourhoods and cancer-immune infiltration. We incorporated entropy function\cite{botta2005rao} from the information system field into MOSAP to measure the diversity of cell spatial networks across the ROIs. It is well-known that cell-cell interactions play a critical role in shaping the spatial variability of immune and cancer cells. Numerous cell populations in a TME contribute to the interaction and heterogeneity. Several entropy scores have been widely used to quantify the diversity and complexity of data in the field of information systems or ecology (\ie Shannon entropy, Renyi entropy, Simpson Index or Rao quadratic entropy). In the context of spatial analysis, a similar quantification metric can be applied to study the heterogeneity of the cell neighbourhood network \cite{pienta2008ecological, botta2005rao, martinelli2022athena}. As cell-cell interactions are influenced by both cell types and pairwise distance between cells, we reasoned that the variation of cell spatial organisation also needed to consider the distance between cells. Therefore, Rao quadratic entropy emerged as a suitable metric and was incorporated into MOSAP. The specific implementation of the metric is going to be discussed in Section \ref{Sec:4.2_Methods}. 
 
-In this chapter, I developed an interactive analysis package called Multi-Omics Spatial Analysis Platform (MOSAP) with a focus on data integration from multiple spatial-omic data and identification of the variations in spatial heterogeneity. MOSAP is implemented to address three key challenges of multimodal analysis and multi-samples analysis power. Firstly, MOSAP provides a function to seamlessly register images from multiple adjacent tissue sections. While high throughput experiments for spatial transcriptomic and proteomic are extensively developing, a single platform that works for both types of spatial-mic data is not yet ready. Therefore, the experiment is often performed by using multiple adjacent tissue sections with each section used as the sample for a single spatial-omic data. Secondly,                
+Additionally, MOSAP also offers a seamless image registration function to map the spatial coordinates of multiple adjacent tissue sections or tissues with similar structures. This registration process is particularly useful in aligning the spatial coordinates of two tissues, thereby facilitating the integration of multiple spatial omics data. The image registration is available in both graphical user interface (GUI) mode and Python script-based approach. MOSAP provides user-friendly interfaces and powerful analytical features to unravel the spatial dynamics underlying cancer-immune cell interaction across multiple ROIs.
 
+In this Chapter, we demonstrate the robustness of MOSAP in studying cellular colocalisation and cell type heterogeneity using samples from two cancer datasets: skin cancer and colorectal cancer (Table \ref{table:Chapt4_DataInfor}). The first dataset features the spatial transcriptomic using the CosMx platform, which captures a panel of $960$ immuno-oncology genes. Additionally, we extended the analysis of the spatial proteomic data to include Imaging Mass Cytometry (IMC) data for the colorectal cancer samples from Chapter \ref{Chap:3}. Notably, the analyses of this chapter focus on the association of cellular neighbourhoods or TMEs with clinical outcomes and genome alteration like Microsatellites Instability (MSI), (Table \ref{table:Chapt4_IMC_patient_metadata}). 
 
-% check https://www.biorxiv.org/content/10.1101/2020.05.28.122614v1.full.pdf
+We further study the cell-cell interaction and colocalisation in the skin cancer samples using the single-cell spatial transcriptomic platform. In this chapter, the transcriptome profile of the cell is captured at higher throughput using a panel of $960$ immuno-oncology genes with the CosMx platform in comparison to a 6-plexed panel RNAscope (Chapter \ref{Chap:2}). Thanks to the increased number of transcripts that can be captured in CosMx data, we can identify cell type and cell-cell interaction through ligand receptors with higher accuracy and confidence \cite{he2022high}. The skin cancer dataset contains $8$ skin cancer samples from patients with SCC, BCC and Melanoma. The fixed tissues were in-situ hybridised with fluorescent probes for the CosMx instrument and scanned using the fields of view (FOVs) approach. Therefore, each skin tissue was scanned into multiple FOVs. By default, each FOV has the dimension of $0.7 \times 0.9 mm^{2}$ which can scan the gene expression of up to $6000$ cells. As the cell segmentation has been done as a standard cycling fluorescent imaging pipeline within CosMx instrument, the analysis method and discussion in the chapter will focus on the downstream analysis of TMEs heterogeneity and cell colocalisation analysis.
 
+Microsatellite status has been identified as a genetic alteration phenomenon that commonly occurs in colorectal cancer (CRC) \cite{battaglin2018microsatellite}. While MSI-positive is often associated with poor responses to chemotherapies, it has been identified that patients with MSI-high responded better to immunotherapies, particularly in the cases of primary tumour advanced to stage II and stage III CRCs \cite{battaglin2018microsatellite,kawakami2015microsatellite, li2021quantitative}. Therefore, MSI screening has become the recommended test for patients after being diagnosed with CRC and opened a potential field for precision treatment of CRCs \cite{svrcek2019msi}. Common MSI testing involved IHC staining and polymerase chain reaction (PCR)–based methods \cite{umar2004revised}. In order to further explore the spatial association of TMEs with clinical outcomes, we extended the analysis of cell neighbourhoods in the colorectal cancer dataset to investigate the correlation between cell neighbourhoods and MSI status (Table \ref{table:Chapt4_IMC_patient_metadata}). Additionally, the analysis of the IMC dataset also aims to identify the correlation between spatial distribution and survival outcomes in CRC. 
+% *********
+\begin{table}[ht]
+\centering
+\caption{Summary of data available}
+\begin{tabular}{||P{4cm} || P{5cm} || P{5cm} || } 
+ \hline
+ Cancer type  & Skin Cancer Samples  & Colorectal Cancer Samples \\ [0.33ex] 
+ \hline\hline
+ Number of patients & 8 & 52  \\ 
+ \hline
+ Number of markers & 960 oncology panel CosMx  & 16 proteins panel IMC \\ 
+ \hline
+ Spatial technology & spatial transcriptomic & spatial proteomic  \\ 
+ \hline
+ Number of images & 86 FOVs &  172 ROIs \\
+ \hline
+ Cancer type & BCC/SCC and Melanoma & Stage III colorectal adenocarcinoma \\ [1ex] 
+ \hline
+ Sample includes  & 2 SCC, 2 BCC and 4 melanoma patients  & 164 tumour and 8 normal ROIs  \\ [1ex] 
+ \hline
+\end{tabular}
+\label{table:Chapt4_DataInfor}
+\end{table}
+With MOSAP's spatial network analysis, we could identify several significant correlations between the cell-cell neighbourhood and clinical outcomes (or diagnostic, genomic status, survival outcome). Overall, we present a computational platform that can quantitatively compare the structural variation of TMEs across multiple samples and model spatial-omics data. Additionally, the MOSAP package includes user-friendly graphical interfaces and displays of cell segmentation for the CosMx dataset into napari \cite{chiu2022napari} for users without programming backgrounds. 
+% *********
 \section{MOSAP-MultiOmics Spatial Analysis Platform}
-\subsection{Main components and data structure for multimodal spatial-omics data}
+\label{Sec:4.2_Methods}
+\subsection{Main components and data structure for multiple samples spatial-omics data}
+
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\columnwidth]{Chapter4/Figures/Chap4_MOSAP_OOP.png}
-    \caption[Schematic drawing of the SpatialOmic objects as the building block of MOSAP]{Schematic drawing of the SpatialOmic objects as the building block of MOSAP}
-    \label{Chap4:MOSAP_OOP}
+    \includegraphics[width=0.8\columnwidth]{Chapter4/Figures/Chap4_MOSAP_DS.png}
+    \caption[Schematic illustration of the Mosadata objects as the building block of MOSAP]{Schematic illustration of the Mosadata objects as the building block of MOSAP. (A) Mosadata is an object designed to store and process spatial-omics data from different experimental designs. (B) MOSAP acts as a platform that enables various spatial analyses, including tissue registration, cell types colocalisation and spatial cellular networks analysis platforms. (C) Multiple network modelling approaches of spatial-omic data are available within MOSAP for sample variational analysis. (D) A feature of MOSAP for identifying the transcripts and proteins co-localisation by cell types. (E) MOSAP also provides multiple methods to register two tissues from adjacent sections or tissues with similar landscapes from separated tissues. The software is available on  \href{Github}{https://github.com/BiomedicalMachineLearning/MOSAP}}
+    \label{Chap4:fig:MOSAP_OOP}
 \end{figure}
-MOSAP is implemented 
+
+MOSAP, implemented in Python, offers a robust platform for downstream analysis and visualization of diverse spatial-omics data. At its core, MOSAP incorporates the \textit{Mosadata} object, designed to handle single-cell spatial-omics data.  The \textit{Mosadata} object is designed to handle single-cell spatial-omics data and the images associated with each spatial modality. The \textit{Mosadata} contains two key levels of information: the single-cell annotation level and the sample-level information (Fig: \ref{Chap4:fig:MOSAP_OOP}A). 
+
+The single-cell annotation level of \textit{Mosadata} comprises a single-cell expression matrix, denoted as $X$, and an observation attribute matrix, represented as $obs$. The single-cell expression matrix with the size of, the number of cells ($\#cells$) by the number of features ($\#features$), which captures the gene or protein expression information for each individual cell. Specifically, $\#cells$ represents the number of cells, and $\#features$ indicates the number of measured biomarkers. Meanwhile, the observation matrix, $obs$, provides additional information to the single-cell expression matrix, including cell type, spatial coordinate, morphological feature, size and shape. 
+
+Building upon the single-cell annotation layer, \textit{Mosadata}'s sample-level layer stores the information about patient clinical relevant data, cell-cell spatial graph ($graph$), supported attributes ($uns$) and the original multiplexed image of the sample ($image$) Fig: \ref{Chap4:fig:MOSAP_OOP}A). Importantly, each instance of \textit{Mosadata} provides an option to store the original multiplexed image of a sample, facilitating the interactive feature of the single-cell annotated data. The object is compatible with spatial data at multiple levels, from transcript/protein to cellular and sample levels. Furthermore, the \textit{Mosadata} object seamlessly integrates with existing data structures such as \textit{AnnData} from scanpy \cite{wolf2018scanpy} and \textit{SpatialOmics} from ATHENA \cite{martinelli2022athena}, enhancing compatibility and supporting a wide range of analysis pipelines.  
+
+Although the design of \textit{Mosadata} is inspired by \textit{AnnData} architecture \cite{wolf2018scanpy}, there are two critical differences in separating two data objects. Firstly, \textit{Mosadata} object is implemented using a sample-centric approach, where data matrices and observations for each sample are stored separately. As the throughput or list of observing markers of each sample varies, resulting in non-overlapping gene and/or protein panels across samples. However, the single cell expression matrix instance ($X$) from \textit{AnnData} requires two datasets to have identical lists of $\#features$ to be merged. Secondly, MOSAP enables flexible visual inspection of results by treating each sample as an individual instance. By storing each sample individually, \textit{Mosadata} allows data exploration of each sample, facilitating detailed analysis within the context of the specific sample. With the custom design data structure, MOSAP allows the analysis across samples and incorporates multiple spatial-omic data together without concern about the dissimilarity between modalities.
+
+We developed MOSAP with three key features that are tightly interwoven with \textit{Mosadata} (Fig: \ref{Chap4:fig:MOSAP_OOP}B). Firstly, MOSAP is implemented with a function for multiple tissue registration, which allows aligning tissues with similar morphology and/or structures (Fig: \ref{Chap4:fig:MOSAP_OOP}C). Unifying the coordinate planes of two or more tissue samples can allow us to integrate data generated by multimodal experiments. This feature is particularly valuable in the context of spatial-omics analysis.
+
+Secondly, we introduced cell-type neighbourhood enrichment analysis through transcripts colocalisation. As the throughput of the spatial data increases, certain cell types may exhibit spatial proximity and demonstrate enrichment in transcripts or protein colocalisation (Fig: \ref{Chap4:fig:MOSAP_OOP}D). This feature possibly allows for a deeper understanding of the spatial relationships between cell types through ligand-receptor (L-R) pair.
+
+Finally, MOSAP can construct four different types of cellular networks given an input sample (Fig: \ref{Chap4:fig:MOSAP_OOP}E). These networks can capture various aspects of cellular interactions through space within the tissue. In the subsequent sections, we will detail the usage of each feature, showcasing their utility to capture the variation of cell heterogeneity and model the neighbourhood between cells. Further details about each MOSAP cell-cell neighbourhood feature will be discussed in the following sections. 
+
+\subsection{Constructing cell-cell neighbourhood networks}
+A cellular neighbourhood network is a network representation of tissue where each cell is a node and neighbourhood relations between cells as edges. Through the analysis of these cell neighbourhood networks, we can understand the global co-expression patterns and capture higher-order relationships among different cell types across samples or ROIs. MOSAP constructs the spatial graphs stored in the networks in the \textit{Mosadata}'s $graph$ attribute using the Python dependency called networkx \cite{hagberg2008exploring}. The $graph$ attribute retains the pairwise distance between neighbouring cells within the network, enabling the calculation of various network measurements such as node entropy and graph connectivity. We implemented three kinds of networks to model different types of cell-cell neighbourhoods and interactions. The detail of the implementation and use cases of each network model will be discussed in the following sessions. To demonstrate the MOSAP's ability to measure the spatial variation across samples, we perform spatial cell type colocalisation and heterogeneity measurement across samples using network analysis. The results of this analysis demonstrate how effective MOSAP can be in deriving high-level interpretation of spatial relationships. 
+
+In our heterogeneity feature, we implemented Rao’s quadratic entropy function to measure the diversity of connection between the observing cell and neighbouring cells (\ie two cells sharing an edge). Utilising Rao’s quadratic entropy scoring as a measurement for heterogeneity has two advantages. Firstly, the entropy score considers the probability of two neighbouring cells (\ie two cells sharing an edge) being different cell types, which captures the variability of the neighbouring cells. Secondly, Rao’s quadratic entropy also considers the spatial distance between each node of the neighbouring pair, which is essential for cell-cell interaction through paracrine signalling. To quantify the heterogeneity of a cell neighbourhood network, Rao's quadratic score is formulated by multiplying the relative probability and the pairwise distance between two cells sharing an edge in the network (Equation \ref{chap4:eq:02}). Next, the final score is summing over all the distance, considering the differences in distance between cells $d(x_i, x_j)$, as well as the frequencies $p(x_i)$ and $p(x_j)$ of the two neighbouring cells belonging to different cell types.      
+
+\begin{equation}
+    Rao\_score = \sum^{S-1}_{i=1}\sum^{S}_{j=i+1}d(x_i, x_j)p(x_i)p(x_j)
+\label{chap4:eq:02}
+\end{equation}
+
+We conducted spatial heterogeneity analysis on both the skin cancer and colorectal cancer datasets using the MOSAP's feature. For each input image, the Rao quadratic score was applied to the annotated cells to measure the overall heterogeneity of each neighbourhood network. The scores from multiple ROIs were aggregated by samples using sample-level information from \textit{Mosadata}. The heterogeneity measurement relied on the choice of neighbourhood network and was unaffected by the total number of cells per ROI or FOV. Therefore, the choice of neighbourhood network is essential for comparing the heterogeneity score across samples. In the skin cancer dataset, the spatial analysis allowed us to assess the variation in cell-cell neighbourhood networks across different FOVs and highlighted the differences in the heterogeneity between BCC, SCC and Melanoma. Similarly, we could also identify the correlation between cell neighbourhoods and MSI status, as well as the survival outcomes  by extending the investigation of cell neighbourhoods in the colorectal dataset.          
+
+\subsubsection{Radius network}
+MOSAP provides a function to construct cellular networking by scanning for the presence of cells within a radius apart from each cell in the spatial-omic data. By utilising the radius network, we can examine the spatial relationships between different cells and simulate paracrine signalling, which involves cell-cell interactions occurring within relatively short distances. For example, we can use the radius network to examine the relationship between cancer cells and immune cells within a certain range and evaluate the extent of their colocalisation and interaction. MOSAP provides a function for the user to query the neighbouring information of every cell within a customisable threshold. The functionality is inspired by the co-occurrence analysis presented in Chapter \ref{Chap:3}. One practical application using this type of network is the calculation of the co-occurrence score, which has proven effective in capturing significant cellular interactions, including ligand-receptor pairs. By leveraging the radius network, MOSAP facilitates a deeper understanding of the cellular interaction, including ligand-receptor pairs and cell-type neighbourhood enrichment underlying diverse cancer development processes.        
+
+\subsubsection{K nearest neighbour network}
+In addition to the radius network, MOSAP also has the ability to build the cellular neighbourhood network using the K nearest neighbour (KNN) approach. The KNN network is achieved by scanning the K nearest cells surrounding the observing cell in the spatial-omic data and connecting them to the same network. Unlike the radius network, KNN is not restricted by the fixed distances threshold, which means the pairwise distance between two neighbouring cells in the network can vary. While KNN is also suitable for modelling cell-cell interactions through paracrine signalling, this type of network is affected heavily by the densities of the cells per sample. Therefore, distance cut-off and/or normalisation would be required for this network model to compare across samples. To address this, we have implemented a distance cutoff function that can be used for post-process the cellular network within MOSAP to enable sample aggregation. By retaining the pairwise distance of nodes in the network, the KNN network can facilitate the study of cell-cell colocalisation through paracrine signalling and the analysis of the neighbourhood relationship between cells.
+
+\subsubsection{Delaunay neighbourhood network}
+In addition to the KNN and radius networks, MOSAP also offers the option to construct a Delaunay network, which is a parameter-free approach for capturing cell-cell neighbourhoods. Specifically, a Delaunay triangle is formed by connecting the circumcircles of any group of three points \cite{fortune1995voronoi}. In the context of spatial-omic, a group of three discrete cells are connected in a graph if each cell is an angle in the Delaunay triangle. Unlike the KNN approach or radius network, which relies on a pre-defined number of neighbouring cells and the radius network that depends on the distance threshold, the Delaunay network connects cells based on their spatial relationships. This type of network is not only parameter-free but also robust enough to avoid the problem with the interaction of the set of cells on the same straight line. By utilising the Delaunay network method, MOSAP can provide an additional method to capture cell-cell neighbourhoods and facilitate the calculation of various network metrics (\ie heterogeneity and connectivity) for downstream analysis.   
+
+\subsection{Quantifying spatial enrichment of cell type transcripts}
+In this approach, the sum of pairwise connections between every cell type pair in the neighbourhood network was calculated.
+\begin{equation}
+    z_{ij|perm} = \frac{x_{ij} - \mu_{(ij|perm)}}{\sigma_{(ij|perm)}}
+\label{chap4:eq:02}
+\end{equation}
+where
 \subsection{Seamlessly registration of images from adjacent tissue sections}
-The rise of spatial-omic technologies, including spatial transcriptomics and spatial proteomics, has created the need for a platform that can perform integrative analysis across different spatial data types. The multimodal experiments are usually performed in adjacent tissue sections which introduce variation to the tissue morphology. Therefore, image registration is often required to align the tissue from multiple rounds of experiments before any integrative analysis can be done.  
-\subsection{Quantifying spatial co-localisation of transcripts via permutation test of MOSAP}
-\subsection{Interactive data exploration and visualisation}
-% \subsection{MOSAP methods and software}
-% MOSAP is an analysis package for processing single-cell spatial-omic data designed to work with multiple samples/images. The key functionalities of MOSAP include: 
+After performing imaging for techniques such as fluorescence in situ hybridization (FISH) or multiplexed immunofluorescence (IF), the fluorescence probes are usually hybridised by heat treatment for sequential staining. However, this imaging process can easily damage or ablate the tissues, making it challenging to retrieve RNA/DNA and protein from the same section \cite{chen2015spatially, wang2012rnascope, hoyt2021multiplex}. To overcome this challenge, multimodal experimental designs are often performed on adjacent tissue sections. Consequently, the current imaging routine often involves using multiple adjacent tissue sections, with each section as the sample for a single spatial-omic dataset. A registration function can act as an intermediate stage to combine tissue samples from multiple spatial-omic platforms. Additionally, the registration can also enable the alignment of multiple tissue samples with similar morphology from different tissue blocks. The images can be registered together using the $tissue\_registration$ function or $MultiOmic registration$ widget from MOSAP. 
+
+MOSAP offers five different image transformation methods to facilitate the registration process. Here, we define two variables $moving\_img$ and $ref\_img$ representing the registering and reference input images for the registration function, respectively. The first three methods enable basic image transformation for image rotation, translation and bilinear interpolation. More specifically, image rotation and image translation allow shifting the hyperplane of the $moving\_img$ to a new degree or a new position along the $ref\_img$'s xy-axis. Meanwhile, bilinear interpolation can scale up the $moving\_img$ to match the size of $ref\_img$ by estimating the pixel values of the surrounding know pixels. These three registration methods have been widely used for multi-resolution registration of MRI and CT scan images \cite{leng2013medical}  These methods are particularly useful for aligning the coordinate planes and macro-displacement of the input images. However, these basic image transformations may not address the structural misalignments that accumulate due to micro-variations in imaging processes.
+
+In addition to the rotation and translation, MOSAP offers more advanced techniques to facilitate image registration. One of these methods is the Affine transform which can shear and scale the image $moving\_img$. More specifically, the Affine transform can anchor the changes to some specific sub-regions of the $moving\_img$, which is particularly useful for aligning local regions in preparation for global transformation (Fig: \ref{Chap4:MOSAP_registration}A). MOSAP also provides a B-spline transform to support higher-order of registration. The B-spline transformer maps the global structures of the $moving\_img$ to the $ref\_img$ using B-spline curves. The curves are determined by connecting a sparse set of control points, which are uniformly distributed throughout the fixed $ref\_img$ \cite{shackelford2011deformable} (Fig: \ref{Chap4:MOSAP_registration}A). 
+
+MOSAP uses mutual information scores as the metric to assess the accuracy of the image registration process. Given the images are correctly registered, the joint histogram of the two images should show similar clusters for aligned local and global structures. Therefore, the mutual information score measures the joint probability of co-occurrence of $x$ and $y$ (denoted as $p(x,y)$) being the pixels from two input images, respectively (Equation \ref{chap4:eq:01}). Additionally, MOSAP employs an iterative approach to perform image registration by applying the selected method to transform the grayscale image, $moving_img$, at multiple resolutions to align it with the reference image, $ref_img$. The function aims to maximise the mutual information score between the two images, as defined in Equation \ref{chap4:eq:01}. By iterating through multiple resolutions, MOSAP can achieve the optimal alignment of the two images given a registration function.
+
+\begin{equation}
+    mutual\_score_{(moving\_img, ref\_img)} = \sum_{x \in moving\_img} \sum_{y \in ref\_img} p(x,y)log(\frac{p(x,y)}{p(x)p(y)})
+\label{chap4:eq:01}
+\end{equation}
+The mutual information score $mutual\_score_{(moving\_img, ref\_img)}$ is defined by Equation \ref{chap4:eq:01}. The score is cal $p(x,y)$ is the joint probability distribution of the two images, $p(x)$ and $p(y)$ are the marginal probability distributions of $moving\_img$ and $ref\_img$ respectively. $mutual\_score_{(moving\_img, ref\_img)}$ represents the amount of information obtained about $moving\_img$ when the value of $ref\_img$ is known, and vice versa.  
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\columnwidth]{Chapter4/Figures/Chapt4_Figure1_registration.png}
+    \caption[Graphical interface of MOSAP's registration module]{Graphical interface of MOSAP's registration module. (A) MOSAP provides registration methods to align images of adjacent tissue sections. Using the MOSAP napari plugin, the users can perform the registration seamlessly with multiple transformer options (\ie Affine and B-splines transform*). (B) The visual inspection of the registered image over the reference image can provide an interactive quality check of the registration result. (* Simulation example using scipy Affine transform \cite{SciPy2020NMeth})}
+    \label{Chap4:MOSAP_registration}
+\end{figure}
 
 \section{Results}
-\subsection{Application of MOSAP on differentiating the heterogeneity through cellular neighbourhood network}
-\subsection{Co-localisation analysis of melanoma markers from CosMx skin cancer data}
-In recent years, a number of graphical user interface (GUI) open-source packages specialised for multiplexed imaging have been developed. These open-source packages allow users to contribute to the analysis power through plugins, scripts, or pipelines \cite{bankhead2017qupath,schneider2012nih}.  
-\subsection{Variation in the tumour microenvironment as a potential predictive model for clinical outcome in colorectal cancer data}
-
-The spatial distribution of cancer cells in skin cancer has distinct enrichment patterns across different subtypes including BCC, SCC, and melanoma. 
-
-% \subsection{The variation of tumour heterogeneity across skin cancer subtypes}
-
-For this analysis, single-cell spatial imaging of SCC, BCC and melanoma using CosMx platform. As mentioned in \ref{Chap:Intro}, CosMx is a platform for spatial transcriptomics at single-cell resolution. While the number of transcripts is currently capped at 960 genes, CosMx technology is already one of the highest throughput FISH. Additionally, the sub-cellular resolution of CosMx technology allows us to retain the location of individual RNA molecules. We generated CosMx data using three SCC, two BCC and four melanoma samples. Each tissue biopsy was selected for multiple fields of view (FOVs) and underwent the CosMX ISH.  
-
-In collaboration with a team member, the cell type of CosMx was projected from scRNA-seq data (Figure \ref{Chap4:fig1}A). Next, MOSAP is applied to perform heterogeneity across the FOVs using cell type information. By applying Delaunay triangulation to cell spatial coordinates, a network of cell-cell neighbourhood networks is constructed. We applied Rao’s quadratic entropy to each cell in the network to measure the diversity of connection between the observing cell and neighbouring cells (i.e. two cells sharing an edge). Using Rao’s quadratic entropy scoring as a measurement for heterogeneity has two advantages. First, the entropy score considers the probability of two neighbouring cells (i.e. two cells sharing an edge) being different cell types. Second, Rao’s quadratic entropy also considers the spatial distance between each member of the neighbouring pair, which is important for cell-cell interaction through paracrine signalling. Each cell in the network was scored by the diversity of its connections, and these scores were visualised as a heatmap (Figure \ref{Chap4:fig1}B). FOV 15 from SCC patient B18 had the highest overall entropy score and was selected for further exploration of the factors contributing to the overall heterogeneity. The regions of this FOV that exhibited a high level of heterogeneity were enriched for immune cell types including B cells, plasmacytoid dendritic cells (pDCs), and myeloid and T cells (Figure \ref{Chap4:fig1}A). Voronoi diagram mapping of cell communities indicated spatial domains composed of different groups of cell types. We identified eight distinct cell communities in FOV 15, including one (Community 7) showing a high density of immune cells consistent with our heterogeneity heatmap (Figure \ref{Chap4:fig1}B, C).  
-
-To compare cell type heterogeneity across the different skin cancer subtypes, we grouped scores across all FOVs by cancer type and detected a significant increase in cell type heterogeneity score in the melanoma samples compared to in NMSC (Figure \ref{Chap4:fig1}D). This finding indicates that the cellular microenvironment in melanoma skin contains a wider variety of cell types coexisting than is seen in other skin cancers.
+\subsection{Application of MOSAP in differentiating tumour heterogeneity in skin cancer}
+As mentioned, CosMx is a platform for spatial transcriptomics at single-cell resolution. With the current number of transcripts in the panel at $960$ genes, CosMx technology is among the highest throughput FISH platform. Given the compelling throughput and resolution, we generated CosMx data for nine skin cancer samples, including three SCC, two BCC and four melanoma samples. Each tissue biopsy was selected for multiple fields of view (FOVs) and underwent the CosMx probes hybridisation. For the computational analysis of the skin cancer dataset, images generated by the CosMx platform were preprocessed single-cell spatial using the pre-trained segmentation model \cite{stringer2021cellpose}. The preprocessing pipeline takes tissue images stained with both nuclear and membrane markers to perform rescaling, normalisation, and boundary enhancement. The preprocessed images were fed into pre-trained Cellpose \cite{stringer2021cellpose} to extract cell boundaries. After cell segmentation, we identified a total of $127,056$ individual cells from $86$ FOVs. Next, we performed cell type identification using the gene expression profile. We clustered and annotated the cell type in the CosMx data into $11$ cell populations (Figure \ref{Chap4:fig1}A). Among the $11$ cell type populations, there were three immune cell clusters, four Keratinocyte (KC) clusters, and tissue-structural specific cell types such as endothelial cells, fibroblasts, melanocytes and pilosebaceous cells. Particularly, $4$ skin-associated Keratinocyte cells were identified namely Basal Keratinocyte(KC-Basal), Keratinocyte-Cycling (KC-Cyc), Differentiating Keratinocyte and other Keratinocyte subpopulations (Figure \ref{Chap4:fig1}A). The data preprocessing was conducted as part of the default pipeline of the CosMx platform, while the cell type identification was a team effort. 
 
 \begin{figure}
     \centering
     \includegraphics[width=0.8\columnwidth]{Chapter4/Figures/Chap4_figure_2.png}
-    \caption[The spatial heterogeneity analysis across the skin cancer subtype]{The spatial heterogeneity analysis across the skin cancer subtype. (A, B) The cell type annotation using CosMx data of patient B18 and the heatmap of the spatial cell heterogeneity from the same FOV. (C) Voronoi diagram of eight cell communities identified in the tissue shown in (A-B) and cell types overlaying of community 7 (pink). (D) Boxplot of heterogeneity scores across three skin cancer types, indicating the greatest overall heterogeneity score for melanoma.)}
+    \caption[The spatial heterogeneity analysis using CosMx data across the skin cancer subtype]{The spatial heterogeneity analysis using CosMx data across the skin cancer subtype. (A, B) The cell type annotation using CosMx data of patient B18 and the heatmap of the spatial cell heterogeneity from the same FOV. (C) Voronoi diagram of eight cell communities identified in the tissue shown in (A-B) and cell types overlaying of community 7 (pink). (D) Boxplot of heterogeneity scores across three skin cancer types, indicating the most significant overall heterogeneity score for melanoma.}
     \label{Chap4:fig1}
     
 \end{figure}
 
-% Here we measured the variation of different cell types population from multiple FOVs across the patient tissues to find spatial patterns enrich for each skin cancer subtypes, (2) the gene markers that enrich specific communities. 
+\subsubsection{Generation and quantification of cell neighbourhood network with MOSAP}
+To better quantify the complexity and cell type heterogeneity of cell distribution across the dataset, we performed the spatial analysis of cell neighbourhood. The annotated cells were projected back into the original FOVs using their coordination to perform heterogeneity analysis and community detection. Firstly, we used the cell's coordinates to construct the Delaunay neighbourhood network for each FOV. The Rao quadratic score was used to measure the diversity of the cell-cell connections for the cell neighbourhood network of each individual FOV.  This heterogeneity score for each cell was visualised as a heatmap (Figure \ref{Chap4:fig1}B). Given, the FOV $15$ from an SCC tissue sample showed the highest overall entropy score, we selected that FOV to explore further the factors contributing to the overall heterogeneity. Next, we performed cell community detection on FOV $15$ to identify the cell neighbourhood that is enriched for the high heterogeneity. By clustering the cell neighbourhood features, we determined $8$ communities of cells from the FOV (Method: \ref{Chap:3:Community_detection_Method}). Qualitatively, the regions within FOV $15$ that exhibited a high level of heterogeneity were enriched for immune cell types, including B cells, plasmacytoid dendritic cells (pDCs), and myeloid and T cells beneath the dermis layer of the skin(Figure \ref{Chap4:fig1}B-C). Voronoi diagram mapping of cell communities also confirmed these spatial regions composed of different groups of cell types. Particularly, community $7$ showed a high density of immune cells (i.e. pDCs and myeloid) consistent with our heterogeneity heatmap (Figure \ref{Chap4:fig1}B, C). Overall, the spatial analysis of cell neighbourhood network and community detection revealed consistent patterns of cell type heterogeneity within the skin cancer dataset, particularly the spatial distribution of immune-dense regions.
+\subsubsection{Comparison of TME heterogeneity across skin cancer subtypes}
+We further measured the overall heterogeneity across all $86$ FOVs to compare cell type heterogeneity across the different cancer subtypes. The heterogeneity scores of each FOV were aggregated and later grouped by cancer type to test for heterogeneity variation (Fig \ref{Chap4:fig1}D). We detected a significant increase in cell heterogeneity score in the melanoma samples compared to non-melanoma skin cancers (Figure \ref{Chap4:fig1}D). This finding suggests that the cellular microenvironment in melanoma skin contains a wider variety of cell types coexisting than in other skin cancers. 
 
-% A potential approach to cancer marker screening 
-% \subsection{Conserved tumor microenvironment communities across skin patient samples}
-% Result with the comparison of cell type across multiple Polaris, CosMx images 
-
-\section{Discussion}
-
-For this work, we will perform the correlation analysis of the pairwise distance between every cell type and clinical outcome. 
-
-We performed network construction using Delaunay triangulation across 170 ROIs and filtered out the pair of distances larger than 40 $\mu$m as a threshold for cells to communicate through paracrine. The results showed that the fold change of distance between immune cells (B-cell, NK-cell ) in the close neighbourhood is highly associated with MSI alteration and casualty (Figure \ref{Chap4:fig2})
-
-Using cell-cell distance as a feature to predict clinical outcome and genomic status
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\columnwidth]{Chapter4/Figures/Chap4_figure1.png}
-    \caption[The association of cell-cell interaction with the genomic status and clinical outcome]{The association of cell-cell interaction with the genomic status and clinical outcome. (A) The correlation of cell-cell interaction and the MSI status of the colorectal cancer dataset. (B) The correlation of cell-cell interaction and the clinical outcome (long and short survival)}
-    \label{Chap4:fig2}
+    \includegraphics[width=0.8\columnwidth]{Chapter4/Figures/Chapter4_Fig3_CosMx_transcript_colocalisation.png}
+    \caption[Spatial analysis of transcript colocalisation in a melanoma tissue]{Spatial analysis of transcript colocalisation in a melanoma tissue patient id 48974. (A) The cell type annotation clearly shows the melanocyte layer blue at the bottom layer of the epidermis. (B) The immunostaining of the adjacent tissue is shown in A for DAPI, CD45 and PMEL markers. (C) The zoom-in image of the region with high expression of PMEL marker. (D) Single transcript expression of melanoma-associated gene markers KMI67, CD44, and AXL co-localise to melanoma tissue. (E) The test significant gene colocalisation of the gene markers shown in (D)}
+    \label{Chap4:CosMX_transcript_colo}
     
 \end{figure}
+
+The immune cells and stromal cells colocalise under the dermis layer, suggesting the potential for cellular interactions \ref{Chap4:CosMX_transcript_colo}A.
+% Mention the normalisation of the combination of data
+
+\subsection{Variation in the tumour microenvironment as a potential predictive model in colorectal cancer with IMC data}
+\subsubsection{Quantitative correlation of spatial heterogeneity and clinical prognosis}
+Given the availability of MSI status, treatment and outcome data for the patients in the IMC dataset (Table \ref{table:Chapt4_IMC_patient_metadata}), we aimed to assess whether the cell neighbourhoods were associated with clinical outcomes or genetic alterations in CRC. First, we established the Delaunay network across the ROIs to generate the sparse network representation of the cell neighbourhood. For each individual patient, we assessed the spatial heterogeneity of each ROI and visualised the heterogeneity score. The boxplot in Fig \ref{Chap4:fig2:IMC_network_analysis}A shows the variation of the heterogeneity score across $42$ patients (out of $52$ patients with complete information Table \ref{table:Chapt4_IMC_patient_metadata}). A preliminary qualitative comparison between the patient with the lowest overall heterogeneity (CR079) and the one with the highest heterogeneity (CR101) suggested a correlation between the spatial neighbourhood and survival (Fig \ref{Chap4:fig2:IMC_network_analysis}B, C). Particularly, patient CR079 survived more than 3 years after being diagnosed, while CR101 lived less than a year (Table \ref{table:Chapt4_IMC_patient_metadata}). 
+
+Next, we conducted quantitative testing of the significant correlation between the heterogeneity, MSI status and survival using the non-parametric Mann-Whitney test. No significant differences were observed in the correlation between heterogeneity and MSI status $pval=0.05$ (Fig \ref{Chap4:fig2:IMC_network_analysis}D). However, we found a strong correlation between lower spatial heterogeneity and long survival $pval=0.03$ ($>5 years mark$) (Fig \ref{table:Chapt4_IMC_patient_metadata}E). The finding of the correlation between cell heterogeneity agreed with some previous studies of CRC using spatial proteomic (\cite{schurch2020coordinated, li2017reference})             
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\columnwidth]{Chapter4/Figures/Chap4_figure6_IMC_network_analysis.png}
+    \caption[IMC spatial cellular neighbourhood network analysis across the dataset]{The spatial cellular neighbourhood network analysis across all patients. (A) Boxplot shows the variation of cellular heterogeneity analysis in $42$ patients with the MSI information available from the IMC dataset. (B) An ROI from the patient CR079 with the lowest heterogeneity. (C) The patient CR101 displayed the highest overall heterogeneity. (D) signification test of cell network analysis against MSI status and survival information across samples}
+    
+    \label{Chap4:fig2:IMC_network_analysis}
+    
+\end{figure}
+\subsubsection{Multi-sample spatial neighbourhood enrichment and the correlation between cell type distance and CRC prognosis}
+The results presented so far mainly focused on the prediction ability of the MOSAP heterogeneity analysis. However, it is also possible to derive the correlation between cell type neighbourhood and clinical outcome through neighbourhood enrichment analysis and pairwise distance. This analysis aimed to determine whether the frequency of cell type neighbourhood could be associated with clinical outcomes. More specifically, we performed neighbourhood enrichment analysis to identify the pair of cell types neighbourhood that were over-represented or over-depleted in the neighbourhood network across the ROIs. Given the $11$ cell types, a total of $55$ pairs were determined and measured. The cell type labels within each ROI were shuffled $1000$ times while maintaining the neighbourhood connectivity. As shown in Figure \ref{Chap4:fig_IMC_res2}A, we could identify the enrichment for the neighbourhood between $16$ pairs of cell types (top $16$ positive enrichment scores) and depletion neighbourhood of $12$ pairs (bottom $12$ negative enrichment scores). Overall, we observed that the immune cell subsets (\ie CD8 T-cell, CD4 T-cell, macrophages and B-cell) and stromal cells appeared to be neighbored more than the neighbourhood cancer-immune cells (\ie epithelial/tumour cells, P53+ tumour). From the neighbourhood enrichment analysis, we carried out the correlation between the enrichment score and MSI status as well as survival outcome (Fig \ref{Chap4:fig_IMC_res2}B). The neighbourhood enrichment score between the two pairs of P53+ tumour-stromal and P53+ tumour with itself  was significantly different between the group of patients with MSI-MSS. Meanwhile, significant differences between long-short survival groups were mostly observed among the immune cell such as CD4 T-cell, CD8 T-cell and Macrophages (Fig \ref{Chap4:fig_IMC_res2}C). 
+
+To further assess how the relative distribution of each cell type was associated with the prognosis, we extracted the pairwise distance between neighbouring cells in the MOSAP spatial radius network. The distance values were again grouped by the MSI status. Wilcoxon rank sum test was applied to differentiate the distance between MSI and MSS status. We observed significant changes in the MSI status with respect to the distance between the cancer cell group (including tumour, P53+ tumour and proliferative) and CD4 T-cell as well as B cells. The distances of stroma cell with CD4 T-cells was also remarkably different between the two MSI subgroups. This is also consistent with the previous result from neighbourhood enrichment analysis. Similarly, a significant test was performed to derive the relation between cell type distance and survival outcome. Again, the most significant between the long and short-survival patient groups was associated with the distance between immune cells such as B-cells, NK-cell and Macrophages.  
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\columnwidth]{Chapter4/Figures/Chapt4_figure4_IMC_sig_test.png}
+    \caption[The association of cellular neighbourhood with the MSI status and clinical outcome]{The association of cellular neighbourhood with the MSI status and clinical outcome. (A) The box plot shows a variation of the neighbourhood enrichment scores between every pair of cell types across 172 ROIs. (B, C) Significant testing of the variation of cell types' neighbourhood enrichment scores against MSI status (B) and 5-year survival rate (C), respectively (scale bar indicates the $-log(pval)$). (D, E) The association of cell-cell neighbourhood distance and the MSI status (D) and 5-year survival rate)}
+    \label{Chap4:fig_IMC_res2}
+    
+\end{figure} 
+
+\section{Discussion}
+In this chapter, we implemented the $Mosadata$ object, a sample-centric data type specifically, which is designed to handle multi-sample and/or multi-modal data processing. The $Mosadata$ object is incorporated into the MOSAP platform, which provides various features for constructing cellular spatial networks and deriving quantitative interpretations from the data. The robustness of the MOSAP platform was demonstrated through the quantitative analysis of two different types of spatial-omic data, namely CosMx for spatial transcriptomic in the skin cancer dataset and IMC for spatial proteomics in the CRC dataset. By utilising the MOSAP platform, we were able to gain valuable insights into the complex cellular composition and heterogeneity within these datasets. 
+
+We studied the cell-cell interaction through colocalisation and cell neighbourhood analyses. W
+
+The spatial analysis of cell neighbourhoods by the MOSAP was capable of identifying distinct patterns of cell type heterogeneity within the skin cancer dataset, providing valuable insights into the complex cellular composition of TME. Additionally, the CosMx single-cell dataset allowed us to perform spatial community analysis, which revealed the increased cellular heterogeneity in melanoma compared to SCC and BCC. 
+
+By applying the heterogeneity and spatial The assumption is that the higher the heterogeneity, the more cell type resided in the same area. Therefore the higher interaction can be captured (citation about the concept).
+
+Novel approaches to MSI testing are being developed that incorporate high-throughput multiplexed IHC. For the CRC dataset, we assessed the correlation analysis of the pairwise distance between every cell type and clinical outcome. 
+
+Using cell-cell distance and cell neighbourhood networks as a feature, we were able to associate the pattern within spatial-omic data with prognosis outcomes and genomic status. 
+
+In summary, the successful application of the MOSAP platform highlights its potential as a powerful tool for analyzing and interpreting spatial-omic data in various biological contexts.
 % % \label{Sec:4.2_Cell_communities}	%CREATE YOUR OWN LABEL.
 % \subsection{The correlation of genomic features and cell types neighborhood}
 % \subsection{The spatial features of cell-cell interaction as predictive model of survival rates}
@@ -89,7 +196,136 @@ Using cell-cell distance as a feature to predict clinical outcome and genomic st
 
 
 % ***************************************************
-% \section{}
+\section{Appendix}
+% Central Nervous System (CNS) 
+\begin{sidewaystable}
+  \centering
+  \caption{IMC colorectal cancer metadata }
+  \begin{longtable}{|c|c|c|c|c|c|c|c|c|}
+\hline
+ & \textbf{alt\_identifier} & \textbf{CHR\_17P\_DEL} & \textbf{MSI\_any} & \textbf{Reccurrance} & \textbf{Site} & \textbf{First\_metastatic\_site} & \textbf{DaysSurvival} & \textbf{5YearSurvival} \\
+\hline
+1 & CR041 & YES & false & recur & descending colon & liver & 989 & $<5$ \\
+\hline
+2 &CR043 & YES & false & recur & descending colon & liver & 1001 & $<5$ \\
+\hline
+3 & CR053 & YES & false & recur & ascending colon & lung & 882 & $<5$ \\
+\hline
+4 & CR055 & YES & false & unk & ascending colon & no data available & 2173 & $>5$ \\
+\hline
+5 & CR057 & YES & false & recur & cecum & liver & 685 & $<5$ \\
+\hline
+6 & CR060 & YES & false & recur & sigmoid colon & omentum & 831 & $<5$ \\
+\hline
+7 &CR077 & YES & false & recur & cecum & lung & 903 & $<5$ \\
+\hline
+8 & CR079 & YES & false & recur & sigmoid colon & liver & 901 & $<5$ \\
+\hline
+9 & CR080 & YES & false & recur & ascending colon & carcinomatosis & 510 & $<5$ \\
+\hline
+10 & CR094 & YES & false & recur & cecum & lung & 353 & $<5$ \\
+\hline
+11 & CR100 & YES & false & recur & cecum & lung & 576 & $<5$ \\
+\hline
+12 & CR141 & YES & false & recur & sigmoid colon & liver & 437 & $<5$ \\
+\hline
+13 & CR164 & YES & false & no recur & cecum & no data available & 3652 & $>5$ \\
+\hline
+14 & CR179 & YES & false & recur & sigmoid colon & retroperitoneum & 2188 & $>5$ \\
+\hline
+15 & CR020 & YES & false & recur & ascending & liver & 429 & $<5$ \\
+\hline
+16 & CR001 &  &  & recur & transverse  & lung & 1777 & $<5$ \\
+\hline
+17 & CR023 &  &  & recur & sigmoid & lung & 1981 & $>5$ \\
+\hline
+18 & CR038 &  &  & no recur & ascending colon &  & 2482 & $>5$ \\
+\hline
+19 & CR051 &  &  & recur & ascending colon & abd wall & 272 & $<5$ \\
+\hline
+20 & CR052 &  & false & recur & cecum & liver & 747 & $<5$ \\
+\hline
+21 & CR059 &  & true & recur & cecum & lung & 485 & $<5$ \\
+\hline
+22 & CR067 & & & no recur & descending colon &  & 2681 & $>5$ \\
+\hline
+23 & CR084 & & & recur & ascending colon & pelvic masses & 633 & $<5$ \\
+
+\hline
+24 & CR097 & & & no recur & cecum &  & 3038 & $>5$ \\
+\hline
+25 & CR109 & & & recur & ascending colon & liver & 438 & $<5$ \\
+\hline
+26 & CR112 & & & recur & sigmoid colon & local/regional & 1986 & $>5$ \\
+\hline
+\multicolumn{4}{c}{\textit{Continued on the next page}} \\
+% \hline
+  \end{longtable}
+  \label{table:Chapt4_IMC_patient_metadata}
+\end{sidewaystable}
+
+\begin{sidewaystable}
+  \centering
+  % % \caption{IMC colorectal cancer metadata (continue)}
+  \begin{longtable}{|c|c|c|c|c|c|c|c|c|}
+\hline
+ & \textbf{alt\_identifier} & \textbf{CHR\_17P\_DEL} & \textbf{MSI\_any} & \textbf{Reccurrance} & \textbf{Site} & \textbf{First\_metastatic\_site} & \textbf{DaysSurvival} & \textbf{5YearSurvival} \\
+\hline
+27 & CR118 &  &  & recur & ascending colon & bone & 1012 &  $<5$ \\
+\hline
+28 & CR034 & NO & false & recur & ascending colon & liver & 405 & $<5$ \\
+\hline
+29 & CR054 & NO & false & recur & descending colon & abd wall & 1829 & $>5$ \\
+\hline
+30 & CR056 & NO & true & recur & cecum & cutaneous back tissue & 179 & $<5$ \\
+\hline
+31 & CR058 & NO & false & recur & sigmoid colon & no data available & 907 & $<5$ \\
+\hline
+32 & CR081 & NO & false & recur & cecum & bone & 946 & $<5$ \\
+\hline
+33 & CR082 & NO & true & no recur & transverse &   & 2176 & $>5$ \\
+\hline
+34 & CR096 & NO & false & recur & splenic flexure & carcinomatosis & 749 & $<5$ \\
+\hline
+35 & CR101 & NO & true & recur & transverse & CNS & 357 & $<5$ \\
+\hline
+36 & CR102 & NO & false & recur & ascending colon & liver & 906 & $<5$ \\
+\hline
+37 & CR110 & NO & true & no further update & transverse & no data available & 2009 & $>5$ \\
+\hline
+38 & CR113 & NO & false & recur & cecum & lung & 3627 & $>5$ \\
+\hline
+39 & CR137 & NO & false & recur & sigmoid colon & liver & 513 & $<5$ \\
+\hline
+40 & CR139 & NO & false & no recur & ascending colon &   & 2272 & $>5$ \\
+\hline
+41 & CR144 & NO & true & recur & ascending colon & carcinomatosis & 453 & $<5$ \\
+\hline
+42 & CR153 & NO & false & no recur & cecum &   & 1993 & $>5$ \\
+\hline
+43 & CR166 & NO & false & recur & descending colon & liver & 1917 & $>5$ \\
+\hline
+44 &CR008 & NO & false & recur & sigmoid & bone & 1793 & $<5$ \\
+\hline
+45 & CR014 & NO & true & recur & transverse & retroperitoneal & 817 & $<5$ \\
+\hline
+46 &CR027 & NO & false & no further update  & cecum & no data available & 2137 & $>5$ \\
+\hline
+47 & CR048 & NO & true & no recur & transverse &   & 1916 & $>5$ \\
+\hline
+48 & CR115 & NO & false & recur & appendix & local/regional & 1045 & $<5$ \\
+\hline
+49 & CR123 & NO & false & no recur & sigmoid & no data available & 468 & $<5$ \\
+\hline
+50 & CR124 & NO & false & no recur & sigmoid &   & 2757 & $>5$ \\
+\hline
+51 & CR185 & NO & false & recur & descending colon & lung & 2395 & $>5$ \\
+\hline
+52 & CR202 & NO & true & no recur & transverse & no data available & 2017 & $>5$ \\
+\hline
+  \end{longtable}
+\end{sidewaystable}
+
 % \label{Sec:4.3_quantitative_validation}	%CREATE YOUR OWN LABEL.
 % \subsection{}
 % ********* Enter your text below this line: ********
